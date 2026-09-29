@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Локальные переменные окружения (VITE_* попадают в бандл — не коммитить)
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
