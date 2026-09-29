@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Canvas } from './components/Canvas'
 import { LayersPanel } from './components/LayersPanel'
 import { PropertiesPanel } from './components/PropertiesPanel'
 import { Toolbar } from './components/Toolbar'
+import { TOOL_SHORTCUTS } from './constants/tools'
 import { useHotkeys } from './hooks/useHotkeys'
 import { useShapes } from './hooks/useShapes'
 import { useViewport } from './hooks/useViewport'
@@ -26,10 +27,12 @@ export default function App() {
   } = useShapes()
   const [activeTool, setActiveTool] = useState<Tool>('select')
 
-  useHotkeys((key) => {
-    // Шаг 3: сопоставить key с TOOL_SHORTCUTS и сменить инструмент.
-    void key
-  })
+  const handleHotkey = useCallback((key: string) => {
+    const tool = TOOL_SHORTCUTS[key]
+    if (tool) setActiveTool(tool)
+  }, [])
+
+  useHotkeys(handleHotkey)
 
   const selectedShape = shapes.find((s) => s.id === selectedId) ?? null
 
