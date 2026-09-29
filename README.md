@@ -1,32 +1,71 @@
-# React + TypeScript + Vite
+# mini-figma
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Мини-редактор векторных примитивов в браузере: прямоугольник и эллипс, зум, панорамирование, панель слоёв и панель свойств. React 19 + TypeScript + Vite, сборка статическая, публикуется на GitHub Pages.
 
-Currently, two official plugins are available:
+## Запуск
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm ci        # установка зависимостей
+npm run dev   # http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+В Windows можно запустить `start.cmd` — он поставит зависимости при первом запуске и откроет дев-сервер.
+
+Требуется Node.js 22 или новее.
+
+## Проверки
+
+```bash
+npm run lint   # oxlint
+npm run build  # tsc -b && vite build
+```
+
+`npm run build` — та же команда, что выполняет CI (`.github/workflows/deploy.yml`), поэтому локальный прогон заранее проверяет, соберётся ли Pages.
+
+## Управление
+
+| Действие | Как |
+|---|---|
+| Выбор и перетаскивание фигуры | инструмент Select (`V`) + протяжка по фигуре |
+| Снять выделение | клик по пустому месту канваса |
+| Прямоугольник | инструмент Rectangle (`R`) + протяжка |
+| Эллипс | инструмент Ellipse (`O`) + протяжка |
+| Выделить из списка | клик по слою в панели Layers |
+| Сменить заливку | панель Properties, поле Fill |
+| Панорамирование | зажать `Space` и протянуть мышь |
+| Зум | колесо мыши, точка под курсором остаётся на месте |
+| Сброс вида | в интерфейсе не предусмотрен: `reset` в `useViewport` пока не подключён ни к одной кнопке |
+
+Клавиши `V`, `R`, `O` не срабатывают, если фокус в поле ввода или нажат `Ctrl`/`Cmd`/`Alt`.
+
+## Структура
+
+```
+src/
+  App.tsx                  корневой компонент: состояние холста и сборка панелей
+  components/
+    Canvas.tsx             холст, сетка, мышь, зум и панорамирование
+    Shape.tsx              отрисовка фигуры, рамка выделения, маркеры
+    Toolbar.tsx            выбор инструмента
+    LayersPanel.tsx        список слоёв
+    PropertiesPanel.tsx    свойства выбранной фигуры
+  hooks/
+    useShapes.ts           список фигур: рисование, выделение, перетаскивание
+    useViewport.ts         камера: панорамирование и зум
+    useHotkeys.ts          горячие клавиши
+  utils/
+    geometry.ts            пересчёт координат «экран ↔ холст», границы зума
+    dom.ts                 признак элемента ввода
+  constants/tools.ts       список инструментов и раскладка горячих клавиш
+  types/shape.ts           типы фигур и точек
+```
+
+## Деплой
+
+Пуш в `main` запускает `.github/workflows/deploy.yml`: сборка и публикация в GitHub Pages по адресу `/mini-figma/` (путь задан в `vite.config.ts` через `base`). Для работы в этой папке в настройках репозитория нужно выбрать ветку `main` и каталог `/ (root)` в разделе Pages.
+
+## Ограничения
+
+- **Нет сохранения.** Фигуры живут в памяти вкладки: перезагрузка страницы очищает холст. Сохранения в файл и в `localStorage` пока нет.
+- Нет отмены действий (undo/redo), нет поворота и изменения размеров фигуры — маркеры в углах пока декоративные.
+- Тестов нет.
