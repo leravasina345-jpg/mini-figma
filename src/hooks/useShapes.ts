@@ -5,13 +5,13 @@ import { screenToCanvas, type Viewport } from '../utils/geometry'
 /** Цвет по умолчанию для новой фигуры. */
 const DEFAULT_FILL = '#4f8dff'
 
-/** ref-дубль списка: beginDrag находит исходную позицию без гонок с рендером. */
-function useLatest<T>(value: T) {
+/** Стабильный геттер последнего значения: ref-дубль читается без гонок с рендером. */
+function useLatest<T>(value: T): () => T {
   const ref = useRef(value)
   useEffect(() => {
     ref.current = value
   }, [value])
-  return ref
+  return useCallback(() => ref.current, [])
 }
 
 /**
@@ -26,7 +26,7 @@ export function useShapes() {
   const [draft, setDraft] = useState<Shape | null>(null)
   const draftRef = useRef<Shape | null>(null)
   const draftStartRef = useRef<Point | null>(null)
-  const shapesRef = useLatest<Shape[]>(shapes)
+  const getShapes = useLatest<Shape[]>(shapes)
 
   /** Активное перетаскивание фигуры: id, точка старта и исходная позиция. */
   const dragRef = useRef<{ id: string; start: Point; original: Point } | null>(null)
@@ -47,14 +47,14 @@ export function useShapes() {
 
   /** Начать перетаскивание выделенной фигуры: фиксируем старт в канвас-координатах. */
   const beginDrag = useCallback((screen: Point, size: Size, viewport: Viewport, id: string) => {
-    const shape = shapesRef.current.find((s) => s.id === id)
+    const shape = getShapes().find((s) => s.id === id)
     if (!shape) return
     dragRef.current = {
       id,
       start: screenToCanvas(screen, size, viewport),
       original: { ...shape.position },
     }
-  }, [])
+  }, [getShapes])
 
   /** Продолжить перетаскивание: позиция = исходная + сдвиг от старта. */
   const dragBy = useCallback((screen: Point, size: Size, viewport: Viewport) => {
