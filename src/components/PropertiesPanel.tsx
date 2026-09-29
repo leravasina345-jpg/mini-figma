@@ -11,7 +11,7 @@ interface PropertiesPanelProps {
  */
 export function PropertiesPanel({ shape, onFillChange }: PropertiesPanelProps) {
   return (
-    <section className="rounded-xl border border-zinc-700/60 bg-zinc-900/90 p-4 shadow-xl backdrop-blur">
+    <section className="pointer-events-auto rounded-xl border border-zinc-700/60 bg-zinc-900/90 p-4 shadow-xl backdrop-blur">
       <h2 className="mb-3 text-xs font-semibold tracking-wider text-zinc-400 uppercase">
         Properties
       </h2>
