@@ -1,18 +1,8 @@
 import { useEffect } from 'react'
+import { isEditableTarget } from '../utils/dom'
 
 /** Обработчик нажатия клавиши. Получает нижний регистр клавиши. */
 export type HotkeyHandler = (key: string) => void
-
-/** Ввод имеет приоритет над горячими клавишами. */
-function isEditableTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false
-  return (
-    target.isContentEditable ||
-    target instanceof HTMLInputElement ||
-    target instanceof HTMLTextAreaElement ||
-    target instanceof HTMLSelectElement
-  )
-}
 
 /**
  * Горячие клавиши приложения: window keydown, клавиши R/O/V
