@@ -146,8 +146,7 @@ export function Canvas({
     }
   }
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    void screenFromEvent(e)
+  const handlePointerUp = () => {
     if (isPanning) {
       endPan()
       return

@@ -36,12 +36,6 @@ export function useShapes() {
     setDraft(shape)
   }, [])
 
-  const addShape = useCallback((input: Omit<Shape, 'id' | 'selected'>) => {
-    const id = crypto.randomUUID()
-    setShapes((prev) => [...prev, { ...input, id, selected: false }])
-    setSelectedId(id)
-  }, [])
-
   const updateShape = useCallback((id: string, patch: Partial<Omit<Shape, 'id'>>) => {
     setShapes((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)))
   }, [])
@@ -147,7 +141,6 @@ export function useShapes() {
     shapes,
     selectedId,
     draft,
-    addShape,
     updateShape,
     selectShape,
     beginDrag,
