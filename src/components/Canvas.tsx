@@ -77,24 +77,22 @@ export function Canvas({
     return () => observer.disconnect()
   }, [])
 
+  const { view, spaceDown, isPanning, beginPan, panBy, endPan, zoomAt } = camera
+
   // wheel вешаем нативно с { passive: false }, чтобы иметь право preventDefault.
+  // Зависимость — стабильный zoomAt: весь объект camera меняется каждый рендер
+  // и заставлял бы переподписывать слушатель без нужды.
   useEffect(() => {
     const el = ref.current
     if (!el) return
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
       const rect = el.getBoundingClientRect()
-      camera.zoomAt(
-        { x: e.clientX - rect.left, y: e.clientY - rect.top },
-        sizeRef.current,
-        e.deltaY,
-      )
+      zoomAt({ x: e.clientX - rect.left, y: e.clientY - rect.top }, sizeRef.current, e.deltaY)
     }
     el.addEventListener('wheel', onWheel, { passive: false })
     return () => el.removeEventListener('wheel', onWheel)
-  }, [camera])
-
-  const { view, spaceDown, isPanning, beginPan, panBy, endPan } = camera
+  }, [zoomAt])
   const gridSize = GRID_STEP * view.scale
 
   const screenFromEvent = (e: React.PointerEvent<HTMLDivElement>) => {
