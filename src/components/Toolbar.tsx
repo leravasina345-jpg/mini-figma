@@ -20,6 +20,7 @@ export function Toolbar({ activeTool, onChange }: ToolbarProps) {
             key={tool.id}
             type="button"
             title={`${tool.label} (${tool.shortcut})`}
+            aria-label={tool.label}
             className={`flex h-9 w-9 items-center justify-center rounded-lg text-base leading-none transition-colors ${
               active
                 ? 'bg-blue-600 text-white'

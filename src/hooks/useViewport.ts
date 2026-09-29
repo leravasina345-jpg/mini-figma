@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Point, Size } from '../types/shape'
 import { clampScale, type Viewport } from '../utils/geometry'
+import { isEditableTarget } from '../utils/dom'
 
 export interface ViewportController {
   /** Текущее состояние камеры (передаётся в geometry). */
@@ -34,7 +35,12 @@ export function useViewport(): ViewportController {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !e.repeat) setSpaceDown(true)
+      if (e.code !== 'Space' || e.repeat) return
+      if (isEditableTarget(e.target)) return
+      // Пробел зарезервирован под панорамирование: не скроллим страницу
+      // и не активируем сфокусированную кнопку.
+      e.preventDefault()
+      setSpaceDown(true)
     }
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.code === 'Space') {

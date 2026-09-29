@@ -26,11 +26,3 @@ export function screenToCanvas(screen: Point, size: Size, viewport: Viewport): P
     y: (screen.y - size.height / 2 - viewport.panY) / viewport.scale,
   }
 }
-
-/** Обратный пересчёт: канвас → экран (для отрисовки/курсора). */
-export function canvasToScreen(canvas: Point, size: Size, viewport: Viewport): Point {
-  return {
-    x: canvas.x * viewport.scale + size.width / 2 + viewport.panX,
-    y: canvas.y * viewport.scale + size.height / 2 + viewport.panY,
-  }
-}
